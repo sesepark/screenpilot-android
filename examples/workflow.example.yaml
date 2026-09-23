@@ -1,0 +1,50 @@
+settings:
+  # Omit serial when exactly one emulator/device is connected.
+  # serial: emulator-5554
+  adb_path: adb
+  poll_interval: 0.25
+  default_timeout: 12
+  artifact_dir: ../artifacts
+  # Optional trusted Python extensions. See src/screenpilot_user/extensions.py.
+  # backend:
+  #   class: screenpilot_user.extensions.CustomBackend
+  #   options: {serial: emulator-5554, adb_path: adb}
+  # observers:
+  #   - class: screenpilot_user.extensions.JsonlObserver
+  #     options: {path: artifacts/run-events.jsonl}
+
+templates:
+  start_button:
+    path: images/start_button.png
+    threshold: 0.88
+    scales: [0.70, 1.40, 15]
+    # Optional normalized search region: left, top, right, bottom.
+    roi: [0.05, 0.40, 0.95, 0.95]
+  confirm_button:
+    path: images/confirm_button.png
+    threshold: 0.90
+    scales: [0.75, 1.30, 12]
+
+steps:
+  - wait_for:
+      template: start_button
+      timeout: 20
+  - tap:
+      template: start_button
+      after: 0.8
+  - tap:
+      template: confirm_button
+      timeout: 8
+      # Offset is relative to the matched template width/height.
+      offset: [0.0, 0.0]
+  - swipe:
+      from: [0.80, 0.75]
+      to: [0.20, 0.75]
+      duration_ms: 350
+  - repeat:
+      count: 3
+      steps:
+        - tap_at: [0.50, 0.85]
+        - sleep: 0.5
+  - keyevent: BACK
+  - screenshot: finished.png
